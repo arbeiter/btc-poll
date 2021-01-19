@@ -6,6 +6,6 @@ from montecarlo.montecarlo_stack import MontecarloStack
 
 
 app = core.App()
-MontecarloStack(app, "montecarlo", env={'region': 'us-west-2'})
+MontecarloStack(app, "montecarlo", env={'region': 'us-east-2'})
 
 app.synth()

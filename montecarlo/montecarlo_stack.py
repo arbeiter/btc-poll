@@ -1,11 +1,11 @@
 from aws_cdk import (
         core,
-        aws_lambda as _lambda
+        aws_lambda as _lambda,
+        aws_apigateway as apigw
     )
 
 
 class MontecarloStack(core.Stack):
-
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
@@ -16,3 +16,7 @@ class MontecarloStack(core.Stack):
             code=_lambda.Code.asset('lambda'),
             handler='hello.handler',
         )
+        apigw.LambdaRestApi(
+            self, 'Endpoint',
+            handler=my_lambda
+            )
