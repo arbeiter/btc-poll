@@ -2,7 +2,9 @@ from aws_cdk import (
         core,
         aws_lambda as _lambda,
         aws_apigateway as apigw,
-        aws_dynamodb as ddb,
+        aws_dynamodb,
+        aws_events,
+        aws_events_targets
     )
 
 
@@ -30,3 +32,32 @@ class MontecarloStack(core.Stack):
         rank = base_api.root.add_resource("rank")
         rank_fetch = rank.add_resource("{id}")
         rank_fetch.add_method("GET")
+
+        # create dynamo table
+        metric_table = aws_dynamodb.Table(
+            self, "metric_table",
+            partition_key=aws_dynamodb.Attribute(
+                name="id",
+                type=aws_dynamodb.AttributeType.STRING
+            )
+        )
+
+        # create producer lambda function
+        producer_lambda = _lambda.Function(self, "producer_lambda_function",
+                                              runtime=_lambda.Runtime.PYTHON_3_6,
+                                              handler="lambda_function.lambda_handler",
+                                              code=_lambda.Code.asset("./lambda/producer"))
+
+        producer_lambda.add_environment("TABLE_NAME", metric_table.table_name)
+
+        # grant permission to lambda to write to demo table
+        metric_table.grant_write_data(producer_lambda)
+        metric_table.grant_read_data(producer_lambda)
+
+        # create a Cloudwatch Event rule
+        one_minute_rule = aws_events.Rule(
+            self, "one_minute_rule",
+            schedule=aws_events.Schedule.rate(core.Duration.minutes(1)),
+        )
+        # Add target to Cloudwatch Event
+        one_minute_rule.add_target(aws_events_targets.LambdaFunction(producer_lambda))
