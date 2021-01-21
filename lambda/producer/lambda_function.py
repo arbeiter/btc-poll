@@ -23,7 +23,7 @@ def fetch_coin_price(coin_name):
 def write_to_ddb(coin_name, coin_price):
     table = dynamodb.Table(TABLE_NAME)
     response = table.update_item(
-        Key={id: coin_name},
+        Key={'id': coin_name},
         UpdateExpression='set #prices = list_append(if_not_exists(#prices, :empty_list), :price)',
         ExpressionAttributeNames={
           '#prices': 'prices'
