@@ -20,6 +20,9 @@ def fetch_coin_price(coin_name):
     price = json.loads(r.data)['result']['price']
     return price
 
+def generate_alerts(coin_name):
+    pass
+
 def write_to_ddb(coin_name, coin_price):
     table = dynamodb.Table(TABLE_NAME)
     response = table.update_item(
@@ -33,7 +36,7 @@ def write_to_ddb(coin_name, coin_price):
           ':empty_list': []
         },
         ReturnValues='ALL_NEW')
-    print(response)
+    print("logging write to ddb" + response)
 
 def lambda_handler(event, context):
     for coin in coins:
