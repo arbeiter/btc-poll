@@ -12,6 +12,14 @@ class MontecarloStack(core.Stack):
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        # create dynamo table
+        metric_table = aws_dynamodb.Table(
+            self, "metric_table",
+            partition_key=aws_dynamodb.Attribute(
+                name="id",
+                type=aws_dynamodb.AttributeType.STRING
+            )
+        )
         # Defines an AWS Lambda resource
         base_lambda = _lambda.Function(
             self, 'BaseLambda',
@@ -19,6 +27,8 @@ class MontecarloStack(core.Stack):
             code=_lambda.Code.asset('lambda'),
             handler='lambda-handler.handler',
         )
+        base_lambda.add_environment("TABLE_NAME", metric_table.table_name)
+
         base_api = apigw.LambdaRestApi(
             self, 'MonteCarloApi',
             handler=base_lambda,
@@ -33,14 +43,6 @@ class MontecarloStack(core.Stack):
         rank_fetch = rank.add_resource("{id}")
         rank_fetch.add_method("GET")
 
-        # create dynamo table
-        metric_table = aws_dynamodb.Table(
-            self, "metric_table",
-            partition_key=aws_dynamodb.Attribute(
-                name="id",
-                type=aws_dynamodb.AttributeType.STRING
-            )
-        )
 
         # create producer lambda function
         producer_lambda = _lambda.Function(self, "producer_lambda_function",
@@ -52,7 +54,9 @@ class MontecarloStack(core.Stack):
 
         # grant permission to lambda to write to demo table
         metric_table.grant_write_data(producer_lambda)
-        metric_table.grant_read_data(producer_lambda)
+        metric_table.grant_write_data(producer_lambda)
+        metric_table.grant_read_data(base_lambda)
+        metric_table.grant_write_data(base_lambda)
 
         # create a Cloudwatch Event rule
         one_minute_rule = aws_events.Rule(

@@ -9,3 +9,4 @@ aws-cdk.aws_events_targets
 boto3
 botocore
 requests
+statistics
