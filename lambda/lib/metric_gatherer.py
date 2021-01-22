@@ -58,35 +58,3 @@ class MetricsGatherer:
             last_second_val_map[key] = prices[-1]
         ranked_keys = sorted(std_dev_map, key=std_dev_map.get)
         return str(ranked_keys.index(requested_key))
-
-def route_request(resource, path, path_params):
-    table = get_table()
-    metric_gatherer = MetricsGatherer()
-    if resource == '/':
-        return metric_gatherer.get_all_keys()
-    elif resource == '/metrics':
-        return ""
-    elif resource == "/metrics/{id}":
-        key = path_params["id"]
-        return metric_gatherer.get_metrics(key)
-    elif resource == "/rank/{id}":
-        key = path_params["id"]
-        return metric_gatherer.get_rank(key)
-    else:
-        return "Resource Not Found"
-
-def handler(event, context):
-    print('request: {}'.format(json.dumps(event)))
-
-    resource = event['resource']
-    path = event['path']
-    path_params = event['pathParameters']
-    response = route_request(resource, path, path_params)
-
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Content-Type': 'text/plain'
-        },
-        'body': response
-    }

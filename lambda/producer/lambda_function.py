@@ -5,7 +5,7 @@ import uuid
 import decimal
 import os
 import boto3
-from lambda_handler import MetricsGatherer
+from ..lib.metric_gatherer import MetricsGatherer
 import statistics
 
 # Get the service resource.

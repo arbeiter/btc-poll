@@ -23,9 +23,9 @@ class MontecarloStack(core.Stack):
         # Defines an AWS Lambda resource
         base_lambda = _lambda.Function(
             self, 'BaseLambda',
-            runtime=_lambda.Runtime.PYTHON_3_7,
+            runtime=_lambda.Runtime.PYTHON_3_8,
             code=_lambda.Code.asset('lambda'),
-            handler='lambda-handler.handler',
+            handler='api_request_handler.handler',
         )
         base_lambda.add_environment("TABLE_NAME", metric_table.table_name)
 
@@ -43,10 +43,9 @@ class MontecarloStack(core.Stack):
         rank_fetch = rank.add_resource("{id}")
         rank_fetch.add_method("GET")
 
-
         # create producer lambda function
         producer_lambda = _lambda.Function(self, "producer_lambda_function",
-                                              runtime=_lambda.Runtime.PYTHON_3_6,
+                                              runtime=_lambda.Runtime.PYTHON_3_8,
                                               handler="lambda_function.lambda_handler",
                                               code=_lambda.Code.asset("./lambda/producer"))
 
@@ -61,7 +60,7 @@ class MontecarloStack(core.Stack):
         # create a Cloudwatch Event rule
         one_minute_rule = aws_events.Rule(
             self, "one_minute_rule",
-            schedule=aws_events.Schedule.rate(core.Duration.minutes(100)),
+            schedule=aws_events.Schedule.rate(core.Duration.minutes(1)),
         )
         # Add target to Cloudwatch Event
         one_minute_rule.add_target(aws_events_targets.LambdaFunction(producer_lambda))
