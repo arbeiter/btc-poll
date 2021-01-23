@@ -3,7 +3,7 @@ import os
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import statistics
-from lib.metric_gatherer import MetricsGatherer
+from producer.metric_gatherer import MetricsGatherer
 
 def get_table():
     # Get the service resource.

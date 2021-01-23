@@ -1,9 +1,32 @@
+## Components
 
-# Welcome to your CDK Python project!
+- 
 
-This is a blank project for Python development with CDK.
+## Features implemented
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## API endpoints
+
+curl {API_ENDPOINT}/prod/metrics
+    Gets available coins
+
+curl {API_ENDPOINT}/prod/metrics/dogeusd
+curl {API_ENDPOINT}/prod/rank/dogeusd
+curl {API_ENDPOINT}/prod/metrics/btcusd
+curl {API_ENDPOINT}/prod/rank/btcusd
+curl {API_ENDPOINT}/prod/metrics/ltcusd
+curl {API_ENDPOINT}/prod/rank/ltcusd
+
+## Alerts
+
+Emits an alert of format: 
+    ("Alert " + coin_price + " " + coin_name)
+when price exceeds 3 * mean
+
+Future steps: 
+    Set up an SES email integration based off this log message: custom meric filter -> SES to be asynchronous while
+    handling this alert.
+
+[#](#) CDK Details
 
 This project is set up like a standard Python project.  The initialization
 process also creates a virtualenv within this project, stored under the `.venv`
@@ -47,15 +70,6 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
-## Useful commands
-
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
-
-Enjoy!
-# btc-poller
-# btc-poll
-# btc-poll
+```
+source aws creds
+```

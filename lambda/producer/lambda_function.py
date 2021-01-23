@@ -1,11 +1,12 @@
 from __future__ import print_function
+
 import json
 import urllib3
 import uuid
 import decimal
 import os
 import boto3
-from ..lib.metric_gatherer import MetricsGatherer
+from metric_gatherer import MetricsGatherer
 import statistics
 
 # Get the service resource.
@@ -23,12 +24,26 @@ def fetch_coin_price(coin_name):
     return price
 
 def generate_alerts(coin_name, coin_price):
+    print("generating alerts")
     metrics_gatherer = MetricsGatherer()
-    day_metrics = metrics_gatherer.get_day_metrics(coin_name)
+    day_metrics = metrics_gatherer.get_metrics(coin_name)
+    print("day_metrics", day_metrics)
     hour_metrics = day_metrics[(-1 * 60 * 60):]
-    mean = statistics.mean(hour_metrics)
+    print(hour_metrics)
+
+    prices = []
+    for metric in hour_metrics:
+        try:
+            converted = float(metric)
+            prices.append(converted)
+        except Exception as e:
+            continue
+
+    mean = statistics.mean(prices)
     if coin_price > 3 * mean:
-        print("Alert " + coin_price + " " + coin_name)
+        print("Alert " + str(coin_price) + " " + coin_name)
+    else:
+        print("No alerts" + str(coin_price) + " " + coin_name)
 
 def write_to_ddb(coin_name, coin_price):
     table = dynamodb.Table(TABLE_NAME)
@@ -43,6 +58,7 @@ def write_to_ddb(coin_name, coin_price):
           ':empty_list': []
         },
         ReturnValues='ALL_NEW')
+    print("Writing to ddb " + str(response))
     generate_alerts(coin_name, coin_price)
 
 def lambda_handler(event, context):

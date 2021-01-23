@@ -52,7 +52,7 @@ class MontecarloStack(core.Stack):
         producer_lambda.add_environment("TABLE_NAME", metric_table.table_name)
 
         # grant permission to lambda to write to demo table
-        metric_table.grant_write_data(producer_lambda)
+        metric_table.grant_read_data(producer_lambda)
         metric_table.grant_write_data(producer_lambda)
         metric_table.grant_read_data(base_lambda)
         metric_table.grant_write_data(base_lambda)

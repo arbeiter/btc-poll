@@ -27,6 +27,7 @@ class MetricsGatherer:
         all_metrics = self.table.query(KeyConditionExpression=Key('id').eq(key))
         ids = all_metrics['Items']
         all_ids = ids[0]['prices']
+        print("GET METRICS " + str(all_ids))
         return self.get_day_metrics(all_ids)
 
     def get_all_metrics(self):
