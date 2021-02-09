@@ -1,21 +1,41 @@
 ## Components
 
 - Poller that invokes the btc api and hydrates the dynamo table with the bitcoin prices
+    - The poller writes the bitcoin prices to ddb with a conditional update
+        - It avoids a full table scan during the write.
     - montecarlo/producer/lambda_function.py
+
 - API Handler that serves requests
     - montecarlo/lambda/api_request_handler.py
+        - Metrics:
+            - For gathering all metrics, the metric request handler does a full table scan
+                - This could be optimized looking up the metric_id key
+            - For getting a specific coin's id, the request handler only looks up a specific key
+              and not a table scan. This is accomplished using a filter expression on
+              the coin_id
+            - For ranking the metrics, currently we do a full table scan and get all data.
+                - We could store the daily average as a separate column to optimize the amount of data held in memory
+
 - Metric Gatherer with business logic to obtain the information requested by the api.
     - montecarlo/lambda/metric_gatherer.py
+- Alert generation:
+    - Alert generation relies on the alert string being written into the logs.
+    - Email can then be decoupled from the poller this way.
+        - We can use metric filters to search for and match terms, phrases, or values in your log events. When a metric filter finds one of the terms, phrases, or values in your log events, you can increment the value of a CloudWatch metric. 
+        - This metric filter can then be used to trigger a lambda that generates emails.
+        - This is a fair bit of work and possibly out of scope of this POC.
+
 - Spins up a cdk stack with the data in us-east-2
     - [montecarlo_stack py](montecarlo_stack.py)
 
 ## Scalability
-    - Writing to and retrieving the daily data in Redis(ElasticCache) instead of looking it up in Dynamodb could enable faster lookups
-        - Retrieval times would be faster for daily metrics
-    - Flushing the cache to dynamodb for data older than a day for longer term metric calculation would work better.
-    - Concurrent lambda executions can get expensive. One of the many knobs of cost control we have are:
-        - Move the Metric Gatherer to an EC2/ECS instance and use a multi-threaded C++/Golang/Java application to split
-          up the network requests to the BTC API and write them to the cache.
+
+- Writing to and retrieving the daily data in Redis(ElasticCache) instead of looking it up in Dynamodb could enable faster lookups
+    - Retrieval times would be faster for daily metrics
+- Flushing the cache to dynamodb for data older than a day for longer term metric calculation would work better.
+- Concurrent lambda executions can get expensive. One of the many knobs of cost control we have are:
+    - Move the Metric Gatherer to an EC2/ECS instance and use a multi-threaded C++/Golang/Java application to split
+      up the network requests to the BTC API and write them to the cache.
 
 ## Performance Optimization
     - A storage optimization can be obtained by keeping a sliding window of daily metrics, by removing from the window
@@ -91,13 +111,6 @@ https://q74w4ov0i6.execute-api.us-east-2.amazonaws.com/prod
 
 ### CDK Details
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
-
 To manually create a virtualenv on MacOS and Linux:
 
 ```
@@ -135,4 +148,8 @@ command.
 
 ```
 source aws creds
+```
+
+```
+cdk diff; cdk deploy
 ```
