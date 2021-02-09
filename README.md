@@ -18,6 +18,17 @@
 
 - Metric Gatherer with business logic to obtain the information requested by the api.
     - montecarlo/lambda/metric_gatherer.py
+        - get_metrics: uses a keyConditionExpression to get metrics for a given key Id
+        - get_all_metrics: Full table scan
+        - get_day_metrics: Filters out get_metrics results for the given day, assumes 24 hour entries
+            - This should be changed to retrieve entries based on the age of insertion, 
+              which should be recorded in the writes
+        - get_rank: 
+            - Rank needs a full table scan as well.
+            - Get all metrics using get_all_metrics
+            - Compute average and standard deviation
+            - sort values by rank and return
+
 - Alert generation:
     - Alert generation relies on the alert string being written into the logs.
     - Email can then be decoupled from the poller this way.
@@ -30,14 +41,13 @@
 
 ## Scalability
 
-- Writing to and retrieving the daily data in Redis(ElasticCache) instead of looking it up in Dynamodb could enable faster lookups
-    - Retrieval times would be faster for daily metrics
 - Flushing the cache to dynamodb for data older than a day for longer term metric calculation would work better.
 - Concurrent lambda executions can get expensive. One of the many knobs of cost control we have are:
     - Move the Metric Gatherer to an EC2/ECS instance and use a multi-threaded C++/Golang/Java application to split
       up the network requests to the BTC API and write them to the cache.
 
 ## Performance Optimization
+
 - A storage optimization can be obtained by keeping a sliding window of daily metrics, by removing from the window
   and adding to the window every second, and also maintaining a running average with math.
 Eg:
@@ -45,6 +55,13 @@ Eg:
     - At Time 24*60*60 + 1:
         - Dequeue MetricAge1 from the Window.
         - Enqueue MetricAge24*60*60 into the Window
+    - This optimization is necessary in production since DDB has column width limit.
+- Rank computation
+    - Replacing Dynamodb with elasticache
+    - Caching and updating the daily average values in Redis
+    - Using the cache to compute the rank versus looking up values in the DDB to avoid costly reads
+    - Writing to and retrieving the daily data in Redis(ElasticCache) instead of looking it up in Dynamodb could enable faster lookups
+        - Retrieval times would be faster for daily metrics
 
 ## Correctness:
 Perhaps the biggest flaw with this implementation right now are:
