@@ -87,7 +87,7 @@ Perhaps the biggest flaw with this implementation right now are:
 - The app will log an alert whenever a metric exceeds 3x the value of its average in the last 1 hour. 
 
 ## API Endpoint to test with:
-https://q74w4ov0i6.execute-api.us-east-2.amazonaws.com/prod
+https://b7ccauan6k.execute-api.us-east-2.amazonaws.com/prod
 
 ## API endpoints
 
