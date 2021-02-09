@@ -91,7 +91,8 @@ https://b7ccauan6k.execute-api.us-east-2.amazonaws.com/prod
 
 ## API endpoints
 
-    curl {API_ENDPOINT}/prod/metrics
+    curl https://b7ccauan6k.execute-api.us-east-2.amazonaws.com/prod
+        dict_keys(['ltcusd', 'dogeusd', 'btcusd'])
         Gets available coins
 
     curl {API_ENDPOINT}/prod/metrics/dogeusd

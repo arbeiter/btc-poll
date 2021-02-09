@@ -36,6 +36,7 @@ class MontecarloStack(core.Stack):
 
         items = base_api.root.add_resource("metrics")
         items.add_method("GET")
+
         item = items.add_resource("{id}")
         item.add_method("GET")
 
