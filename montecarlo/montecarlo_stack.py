@@ -60,7 +60,7 @@ class MontecarloStack(core.Stack):
         # create a Cloudwatch Event rule
         one_minute_rule = aws_events.Rule(
             self, "one_minute_rule",
-            schedule=aws_events.Schedule.rate(core.Duration.minutes(20)),
+            schedule=aws_events.Schedule.rate(core.Duration.minutes(120)),
         )
         # Add target to Cloudwatch Event
         one_minute_rule.add_target(aws_events_targets.LambdaFunction(producer_lambda))

@@ -109,6 +109,31 @@ https://b7ccauan6k.execute-api.us-east-2.amazonaws.com/prod
     - The values in the db could be prefixed with the timestamp in case the hydrator for the values (poller
       component) crashes. Right now, we rely on those values being present and the poller never crashing.
 
+#### Sample CW alerts
+```
+	2021-02-08T22:38:35.045-08:00	START RequestId: a593f728-86cc-49f2-b398-b3ed7086332a Version: $LATEST
+	2021-02-08T22:38:35.493-08:00	Writing to ddb {'Attributes': {'id': 'btcusd', 'prices': ['47090', '47237.3', '47251.9', '47120', '47079', '47184', '47300', '47500', '47564.1', '47548.4']}, 'ResponseMetadata': {'RequestId': 'A0SIUKH6ULTCQAODAMCVVI125BVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPStatusCode': 200, 'HTTPHeaders': {'server': 'Server', 'date': 'Tue, 09 Feb 2021 06:38:35 GMT', 'content-type': 'application/x-amz-json-1.0', 'content-length': '201', 'connection': 'keep-alive', 'x-amzn-requestid': 'A0SIUKH6ULTCQAODAMCVVI125BVV4KQNSO5AEMVJF66Q9ASUAAJG', 'x-amz-crc32': '3805190591'}, 'RetryAttempts': 0}}
+	2021-02-08T22:38:35.493-08:00	generating alerts
+	2021-02-08T22:38:35.766-08:00	GET METRICS ['47090', '47237.3', '47251.9', '47120', '47079', '47184', '47300', '47500', '47564.1', '47548.4']
+	2021-02-08T22:38:35.766-08:00	day_metrics ['47090', '47237.3', '47251.9', '47120', '47079', '47184', '47300', '47500', '47564.1', '47548.4']
+	2021-02-08T22:38:35.766-08:00	['47090', '47237.3', '47251.9', '47120', '47079', '47184', '47300', '47500', '47564.1', '47548.4']
+	2021-02-08T22:38:35.766-08:00	Alert 47548.4 btcusd
+	2021-02-08T22:38:36.013-08:00	Writing to ddb {'Attributes': {'id': 'ltcusd', 'prices': ['170.84', '170.84', '170.73', '170.43', '170.02', '170.43', '170.91', '171.4', '171.54', '171.2']}, 'ResponseMetadata': {'RequestId': 'DI700BOGV8MRBF3J15T7KRIDENVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPStatusCode': 200, 'HTTPHeaders': {'server': 'Server', 'date': 'Tue, 09 Feb 2021 06:38:35 GMT', 'content-type': 'application/x-amz-json-1.0', 'content-length': '201', 'connection': 'keep-alive', 'x-amzn-requestid': 'DI700BOGV8MRBF3J15T7KRIDENVV4KQNSO5AEMVJF66Q9ASUAAJG', 'x-amz-crc32': '603431769'}, 'RetryAttempts': 0}}
+	2021-02-08T22:38:36.013-08:00	generating alerts
+	2021-02-08T22:38:36.273-08:00	GET METRICS ['170.84', '170.84', '170.73', '170.43', '170.02', '170.43', '170.91', '171.4', '171.54', '171.2']
+	2021-02-08T22:38:36.273-08:00	day_metrics ['170.84', '170.84', '170.73', '170.43', '170.02', '170.43', '170.91', '171.4', '171.54', '171.2']
+	2021-02-08T22:38:36.273-08:00	['170.84', '170.84', '170.73', '170.43', '170.02', '170.43', '170.91', '171.4', '171.54', '171.2']
+	2021-02-08T22:38:36.292-08:00	Alert 171.2 ltcusd
+	2021-02-08T22:38:36.513-08:00	Writing to ddb {'Attributes': {'id': 'dogeusd', 'prices': ['0.0806613', '0.0806', '0.0804033', '0.0800001', '0.0799713', '0.0798435', '0.079769', '0.0796531', '0.0800735', '0.0798693']}, 'ResponseMetadata': {'RequestId': 'TNFC2HT0089SMN7RC8UFNT39EFVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPStatusCode': 200, 'HTTPHeaders': {'server': 'Server', 'date': 'Tue, 09 Feb 2021 06:38:36 GMT', 'content-type': 'application/x-amz-json-1.0', 'content-length': '230', 'connection': 'keep-alive', 'x-amzn-requestid': 'TNFC2HT0089SMN7RC8UFNT39EFVV4KQNSO5AEMVJF66Q9ASUAAJG', 'x-amz-crc32': '881094376'}, 'RetryAttempts': 0}}
+	2021-02-08T22:38:36.513-08:00	generating alerts
+	2021-02-08T22:38:36.768-08:00	GET METRICS ['0.0806613', '0.0806', '0.0804033', '0.0800001', '0.0799713', '0.0798435', '0.079769', '0.0796531', '0.0800735', '0.0798693']
+	2021-02-08T22:38:36.768-08:00	day_metrics ['0.0806613', '0.0806', '0.0804033', '0.0800001', '0.0799713', '0.0798435', '0.079769', '0.0796531', '0.0800735', '0.0798693']
+	2021-02-08T22:38:36.768-08:00	['0.0806613', '0.0806', '0.0804033', '0.0800001', '0.0799713', '0.0798435', '0.079769', '0.0796531', '0.0800735', '0.0798693']
+	2021-02-08T22:38:36.772-08:00	No alerts0.0798693 dogeusd
+	2021-02-08T22:38:36.774-08:00	END RequestId: a593f728-86cc-49f2-b398-b3ed7086332a
+	2021-02-08T22:38:36.774-08:00	REPORT RequestId: a593f728-86cc-49f2-b398-b3ed7086332a Duration: 1729.22 ms Billed Duration: 1730 ms Memory Size: 128 MB Max Memory Used: 77 MB Init Duration: 330.53 ms 
+```
+
 ### CDK Details
 
 To manually create a virtualenv on MacOS and Linux:
